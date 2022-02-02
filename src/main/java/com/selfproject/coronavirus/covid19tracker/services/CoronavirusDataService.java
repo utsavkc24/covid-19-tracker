@@ -1,6 +1,7 @@
 package com.selfproject.coronavirus.covid19tracker.services;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -8,6 +9,8 @@ import java.net.http.HttpResponse;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -49,6 +52,16 @@ public class CoronavirusDataService {
          * common response handlers(In this case of String)
          */
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.println(response.body());
+
+        /*
+         * How to do CSV parsing in Java using org.apache.commons.csv
+         */
+        StringReader csvStringReader = new StringReader(response.body()); // Convert String to StringReader as parse()
+                                                                          // accept Reader as arg.
+        Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(csvStringReader);
+        for (CSVRecord record : records) {
+            String country = record.get("Country/Region");
+            System.out.println(country);
+        }
     }
 }
