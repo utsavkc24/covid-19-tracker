@@ -6,8 +6,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
+
+import com.selfproject.coronavirus.covid19tracker.models.LocationStats;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -18,16 +22,25 @@ import org.springframework.stereotype.Service;
 public class CoronavirusDataService {
     private static final String VIRUS_DATA_URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv";
 
+    private List<LocationStats> allStats = new ArrayList<>();
+
+    public List<LocationStats> getAllStats() {
+        return allStats;
+    }
+
     /*
      * How to fetch data from a URL (Basic)
      */
     @PostConstruct
     /**
      * Schedule a Task Using Cron Expressions,This means saying spring to run this
-     * method every sec
+     * method every day
      */
-    @Scheduled(cron = "* * * * * *")
+    @Scheduled(cron = "* * 1 * * *")
     public void fetchData() throws IOException, InterruptedException {
+
+        List<LocationStats> newStats = new ArrayList<>();
+
         /*
          * 1. HTTP Client -> An HttpClient can be used to send requests and retrieve
          * their responses
@@ -66,8 +79,12 @@ public class CoronavirusDataService {
                                                                           // accept Reader as arg.
         Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(csvStringReader);
         for (CSVRecord record : records) {
-            String country = record.get("Country/Region");
-            System.out.println(country);
+            LocationStats locationStat = new LocationStats();
+            locationStat.setCountry(record.get("Country/Region"));
+            locationStat.setState(record.get("Province/State"));
+            locationStat.setLatestTotalCases(Integer.parseInt(record.get(record.size() - 1)));
+            newStats.add(locationStat);
         }
+        this.allStats = newStats;
     }
 }
