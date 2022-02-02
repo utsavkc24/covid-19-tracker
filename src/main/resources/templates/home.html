@@ -29,18 +29,18 @@
         <table class="table table-striped">
             <tr>
                 <th>Country</th>
-                <th>State</th>
+                <!-- <th>State</th> -->
                 <th>Total Cases</th>
                 <th>Changes since last day</th>
             </tr>
             <tr th:each="locationStat : ${locationStats}">
                 <td th:text="${locationStat.country}">NA</td>
-                <td th:text="${locationStat.state}">NA</td>
+                <!-- <td th:text="${locationStat.state}">NA</td> -->
                 <td th:text="${locationStat.latestTotalCases}">0</td>
                 <td th:text="${locationStat.diffFromPrevDay}">0</td>
             </tr>
         </table>
-
+    </div>
 
 </body>
 
