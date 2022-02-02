@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +22,11 @@ public class CoronavirusDataService {
      * How to fetch data from a URL (Basic)
      */
     @PostConstruct
+    /**
+     * Schedule a Task Using Cron Expressions,This means saying spring to run this
+     * method every sec
+     */
+    @Scheduled(cron = "* * * * * *")
     public void fetchData() throws IOException, InterruptedException {
         /*
          * 1. HTTP Client -> An HttpClient can be used to send requests and retrieve
